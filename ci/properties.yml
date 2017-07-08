@@ -1,3 +1,3 @@
 resource-name: serverless-resource
-git-server-uri: "https://github.com/"
-gith-branch: master
+git-server-base: "https://github.com/"
+git-branch: master
