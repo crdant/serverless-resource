@@ -1,4 +1,4 @@
-FROM node:boron
+FROM node:boron-slim
 
 COPY assets/check /opt/resource/check
 COPY assets/in /opt/resource/in
