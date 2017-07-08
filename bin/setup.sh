@@ -15,11 +15,21 @@ realpath() {
 
 usage() {
   me=$(basename ${0})
-  echo "USAGE: ${me}"
+  echo "USAGE: ${me} path/to/credentials.yml"
   exit 1
 }
 
+
+if [ -z "${stub}" ]; then
+  stub="../credentials.yml"
+fi
+stub=$(realpath $stub)
+if [ ! -f ${stub} ]; then
+  usage
+fi
+
+
 pushd $DIR
-  fly -t ${fly_target} trigger-job -j serverless-resource/publish
-  fly -t ${fly_target} watch -j serverless-resource/publish
+  fly -t ${fly_target} set-pipeline -p serverless-resource --config ci/pipeline.yml --load-vars-from ci/properties.yml --load-vars-from ${stub} -n
+  fly -t ${fly_target} unpause-pipeline --pipeline serverless-resource
 popd
