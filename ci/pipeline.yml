@@ -1,0 +1,25 @@
+---
+jobs:
+- name: publish
+  public: true
+  serial: true
+  plan:
+  - get: source
+  - put: image
+    params:
+      build: source
+
+resources:
+- name: source
+  type: git
+  source:
+    uri: ((git-server))/((git-username))/((resource-name))
+    branch: ((git-branch))
+
+- name: image
+  type: docker-image
+  source:
+    email: ((docker-hub-email))
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    repository: ((docker-hub-username))/((resource-name))
