@@ -30,6 +30,7 @@ fi
 
 
 pushd $DIR
+  fly -t ${fly_target} login
   fly -t ${fly_target} set-pipeline -p serverless-resource --config ci/pipeline.yml --load-vars-from ci/properties.yml --load-vars-from ${stub} -n
   fly -t ${fly_target} unpause-pipeline --pipeline serverless-resource
 popd

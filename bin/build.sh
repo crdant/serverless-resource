@@ -20,6 +20,7 @@ usage() {
 }
 
 pushd $DIR
+  fly -t ${fly_target} login
   fly -t ${fly_target} trigger-job -j serverless-resource/publish
   fly -t ${fly_target} watch -j serverless-resource/publish
 popd
