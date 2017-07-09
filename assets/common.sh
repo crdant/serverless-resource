@@ -7,9 +7,14 @@ store_payload() {
   cat > $payload <&0
 }
 
-extract_parameter(){
+extract_config(){
+  config="${1}"
+  jq -r ".source.${config}" < "${payload}"
+}
+
+extract_parameter() {
   parameter="${1}"
-  jq -r '.source.{$parameter} // ""' < "${payload}"
+  jq -r ".params.${parameter}" < "${payload}"
 }
 
 serverless_cmd() {

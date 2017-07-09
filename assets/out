@@ -16,18 +16,45 @@ fi
 export PATH=/usr/local/bin:${PATH}
 
 store_payload
-echo "remove me later, only for development"
-echo "payload: ${payload}"
-version=$(extract_parameter "version")
-package=$(extract_parameter "package")
-deploy=$(extract_parameter "deploy")
 
-serverless_cmd info
+# determine command
+deploy=$(extract_config "deploy")
+echo "Deploy: ${deploy}"
+
+if [ -z "$deploy" ]; then
+  deploy=false
+fi
+
+if [ "${deploy}" = "true" ] ; then
+  cmd="deploy"
+else
+  cmd="package"
+fi
+
+echo "Command: ${cmd}"
+
+# setup flags
+flags=
+
+package=$(extract_config "package")
+if [ -n "${package}" ] ; then
+  flags="${flags} --package ${package}"
+fi
+
+stage=$(extract_parameter "stage")
+if [ -n "${stage}" ] && [ "${stage}" != "null" ] ; then
+  flags="${flags} --stage ${stage}"
+else
+  stage=$(extract_config "stage")
+  if [ -n "${stage}" ] ; then
+    flags="${flags} --stage ${stage}"
+  fi
+fi
+
+echo "$flags"
+serverless_cmd info # $cmd $flags
 
 jq -n "{
-  version: {
-    "ref": "${version}"
-  },
   metadata: [
     "package": "${package}"
   ]
