@@ -5,7 +5,6 @@ exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
 
 destination=$1
-echo "Destination: ${destination}"
 
 if [ -z "$destination" ]; then
   echo "usage: $0 <path/to/destination>" >&2
@@ -18,9 +17,10 @@ export PATH=/usr/local/bin:${PATH}
 
 store_payload
 
+cat ${payload}
+
 # determine command
 deploy=$(extract_config "deploy")
-echo "Deploy: ${deploy}"
 
 if [ -z "$deploy" ]; then
   deploy=false
@@ -39,6 +39,7 @@ flags=
 
 package=$(extract_config "package")
 if [ -n "${package}" ] ; then
+  package=${destination}/${package}
   flags="${flags} --package ${package}"
 fi
 
@@ -47,16 +48,30 @@ if [ -n "${stage}" ] && [ "${stage}" != "null" ] ; then
   flags="${flags} --stage ${stage}"
 else
   stage=$(extract_config "stage")
-  if [ -n "${stage}" ] ; then
+  if [ -n "${stage}" ] && [ "${stage}" != "null" ]; then
     flags="${flags} --stage ${stage}"
   fi
 fi
 
-echo "$flags"
-cd $destination
+service=$(extract_parameter "service")
+if [ -z "${service}" ] || [ "${service}" = "null" ] ; then
+  echo "${RED}Service not provided${NC}"
+  exit -1 ;
+fi
+
+cd $destination/$service
 serverless_cmd $cmd $flags
 
+echo "extracting the version"
+
+artifactDirectory=`extract_state "${package}" ".package.artifactDirectoryName"`
+version=`basename ${artifactDirectory}`
+
+echo "version will be ${version}"
 jq -n "{
+  version: {
+    ref: \"${version}\"
+  },
   metadata: [
     { package: \"${package}\" }
   ]

@@ -17,14 +17,21 @@ extract_parameter() {
   jq -r ".params.${parameter}" < "${payload}"
 }
 
+extract_state() {
+  directory=$1
+  expression=$2
+
+  jq -r "${expression}" < "${directory}/serverless-state.json"
+}
+
 serverless_cmd() {
   cmd="serverless $@"
 
-  printf "Running serverless command: ${GREEN}serverless %s${NC}" "$@"
+  printf "Running serverless command: ${GREEN}serverless $cmd${NC}\n"
 
   if ($cmd) then
-    printf "\nSuccessfully ran serverless command: ${GREEN}%s${NC}.\n\n" "${cmd}"
-    return
+    printf "\nSuccessfully ran serverless command: ${GREEN}$cmd${NC}.\n\n"
+    return 0
   fi
 
   printf "\n${RED}Failed to run serverless command %s.${NC}" "${cmd}"
