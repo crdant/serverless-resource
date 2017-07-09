@@ -22,7 +22,7 @@ serverless_cmd() {
 
   printf "Running serverless command: ${GREEN}serverless %s${NC}" "$@"
 
-  if exec $cmd; then
+  if ($cmd) then
     printf "\nSuccessfully ran serverless command: ${GREEN}%s${NC}.\n\n" "${cmd}"
     return
   fi
