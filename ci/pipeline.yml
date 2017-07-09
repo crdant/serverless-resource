@@ -5,6 +5,7 @@ jobs:
   serial: true
   plan:
   - get: source
+    trigger: true
   - put: image
     params:
       build: source
