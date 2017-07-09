@@ -70,7 +70,7 @@ version=`basename ${artifactDirectory}`
 echo "version will be ${version}"
 jq -n "{
   version: {
-    ref: \"${version}\"
+    stamp: \"${version}\"
   },
   metadata: [
     { package: \"${package}\" }
