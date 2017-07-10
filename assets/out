@@ -19,20 +19,7 @@ store_payload
 
 cat ${payload}
 
-# determine command
-deploy=$(extract_config "deploy")
-
-if [ -z "$deploy" ]; then
-  deploy=false
-fi
-
-if [ "${deploy}" = "true" ] ; then
-  cmd="deploy"
-else
-  cmd="package"
-fi
-
-echo "Command: ${cmd}"
+cmd="deploy"
 
 # setup flags
 flags=
@@ -53,26 +40,20 @@ else
   fi
 fi
 
-service=$(extract_parameter "service")
-if [ -z "${service}" ] || [ "${service}" = "null" ] ; then
-  echo "${RED}Service not provided${NC}"
-  exit -1 ;
-fi
-
-cd $destination/$service
+cd $destination
 serverless_cmd $cmd $flags
-
-echo "extracting the version"
 
 artifactDirectory=`extract_state "${package}" ".package.artifactDirectoryName"`
 version=`basename ${artifactDirectory}`
 
-echo "version will be ${version}"
 jq -n "{
   version: {
     stamp: \"${version}\"
   },
   metadata: [
-    { package: \"${package}\" }
+    {
+      package: \"${package}\",
+      archive: \"${archive}\"
+    }
   ]
 }" >&3
