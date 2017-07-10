@@ -40,7 +40,13 @@ else
   fi
 fi
 
-cd $destination
+service=$(extract_parameter "service")
+if [ -z "${service}" ] || [ "${service}" = "null" ] ; then
+  echo "${RED}Service not provided${NC}"
+  exit -1 ;
+fi
+
+cd $destination/${service}
 serverless_cmd $cmd $flags
 
 artifactDirectory=`extract_state "${package}" ".package.artifactDirectoryName"`
