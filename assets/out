@@ -24,8 +24,8 @@ cmd="deploy"
 # setup flags
 flags=
 
-export AWS_ACCESS_KEY_ID=$(extract_source "aws_accces_key_id")
-export AWS_SECRET_ACCESS_KEY=$(extract_source "aws_secret_access_key")
+export AWS_ACCESS_KEY_ID=$(extract_config "aws_accces_key_id")
+export AWS_SECRET_ACCESS_KEY=$(extract_config "aws_secret_access_key")
 
 package=$(extract_parameter "package")
 if [ -n "${package}" ] ; then
