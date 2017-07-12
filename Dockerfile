@@ -1,4 +1,4 @@
-FROM node:boron-slim
+FROM crdant/serverless-image:latest
 
 COPY assets/check /opt/resource/check
 COPY assets/in /opt/resource/in
