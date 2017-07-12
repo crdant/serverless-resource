@@ -24,7 +24,7 @@ cmd="deploy"
 # setup flags
 flags=
 
-export AWS_ACCESS_KEY_ID=$(extract_config "aws_accces_key_id")
+export AWS_ACCESS_KEY_ID=$(extract_config "aws_access_key_id")
 export AWS_SECRET_ACCESS_KEY=$(extract_config "aws_secret_access_key")
 
 echo "Credentials: ${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}"
