@@ -6,7 +6,9 @@ jobs:
   plan:
   - get: source
     trigger: true
-  - put: image
+  - get: base-image
+    trigger: true
+  - put: resource-image
     params:
       build: source
 
@@ -17,10 +19,18 @@ resources:
     uri: ((git-server-base))/((git-username))/((resource-name))
     branch: ((git-branch))
 
-- name: image
+- name: resource-image
   type: docker-image
   source:
     email: ((docker-hub-email))
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     repository: ((docker-hub-username))/((resource-name))
+
+- name: base-image
+  type: docker-image
+  source:
+    email: ((docker-hub-email))
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    repository: crdant/serverless-image
