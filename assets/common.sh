@@ -37,3 +37,8 @@ serverless_cmd() {
   printf "\n${RED}Failed to run serverless command %s.${NC}" "${cmd}"
   return 1
 }
+
+prepare_environment() {
+  env=$(extract_parameter "env")
+  eval $(echo $env | jq 'to_entries|map("export " + .key + "=" + .value)|.[]')
+}
