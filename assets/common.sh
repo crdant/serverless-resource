@@ -40,5 +40,5 @@ serverless_cmd() {
 
 prepare_environment() {
   env=$(extract_parameter "env")
-  eval $(echo $env | jq 'to_entries|map("export " + .key + "=" + .value)|.[]')
+  eval $(echo $env | jq --raw-ouput 'to_entries|map("export " + .key + "=" + .value)|.[]')
 }
