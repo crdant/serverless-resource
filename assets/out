@@ -20,7 +20,7 @@ store_payload
 cmd="deploy"
 
 # setup flags
-flags=
+flags="--force --verbose"
 
 export AWS_ACCESS_KEY_ID=$(extract_config "aws_access_key_id")
 export AWS_SECRET_ACCESS_KEY=$(extract_config "aws_secret_access_key")
