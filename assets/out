@@ -28,8 +28,13 @@ export AWS_SECRET_ACCESS_KEY=$(extract_config "aws_secret_access_key")
 # use the provided region or default to us-east-1
 export AWS_REGION=$(extract_config "aws_region")
 if [ -z "${AWS_REGION}" ] ; then
-  AWS_REGION="us-east-1"
+  export AWS_REGION="us-east-1"
+else
+  aws_region="${AWS_REGION}"
 fi
+
+env=$(extract_parameter "env")
+echo "${env}"
 
 package=$(extract_parameter "package")
 if [ -n "${package}" ] ; then
