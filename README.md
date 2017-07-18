@@ -1,87 +1,27 @@
-51 - Dummy resource via Docker image
-====================================
+# Serverless Framework Resource
 
-Create docker image
--------------------
+Deploys services using the [Serverless Framework](https://serverless.com). Currently only supports [AWS](https://aws.amazon.com).
 
-As documented in http://concourse.ci/implementing-resources.html: a resource type is implemented by a container image with three scripts:
+## Source Configuration
 
--	`/opt/resource/check` for checking for new versions of the resource
--	`/opt/resource/in` for pulling a version of the resource down
--	`/opt/resource/out` for idempotently pushing a version up
+* `aws_access_key_id`: *Required.* AWS access key to use for deployment
+  credentials.
 
-For this exercise we have simple `/opt/resource/{check, in, out}` scripts which we can put into a container image at `/opt/resource` on the Vagrant VM.
+* `aws_secret_access_key`: *Required.* AWS secret key to use for deployment
 
-We will create a normal Docker image, host it on Docker Hub, and use it in our worker.
+* `aws_region`: *Optional.* AWS region to deploy to. Defaults to `us-east-1`.
 
-Define a docker image
----------------------
+## Behavior
 
-This section's subfolder `docker` containers a `Dockerfile` to add our dummy `check`, `in`, and `out` scripts into `/opt/resource/` within the container:
+This is a write-only resource, so `in` and `check` are both no-op.
 
-```dockerfile
-FROM busybox
+### `out`: Push an image, or build and push a `Dockerfile`.
 
-COPY check /opt/resource/check
-COPY in /opt/resource/in
-COPY out /opt/resource/out
-```
+Deploy a service using `serverless deploy`.
 
-Create a docker container image
--------------------------------
+#### Parameters
 
-We could manually create a docker image and push it to Docker Hub. But since we have concourse we will use it instead.
-
-The pipeline for this section is to `put` a docker-image resource.
-
-The pipeline is below:
-
-```yaml
-jobs:
-- name: job-publish
-  public: true
-  serial: true
-  plan:
-  - get: resource-tutorial
-  - put: resource-51-docker-image
-    params:
-      build: resource-tutorial/51_dummy_resource_docker_image/docker
-
-resources:
-- name: resource-tutorial
-  type: git
-  source:
-    uri: https://github.com/drnic/concourse-tutorial.git
-
-- name: resource-51-docker-image
-  type: docker-image
-  source:
-    email: {{docker-hub-email}}
-    username: {{docker-hub-username}}
-    password: {{docker-hub-password}}
-    repository: {{docker-hub-image-dummy-resource}}
-```
-
-Since the source `Dockerfile` is actually within this tutorial's own git repo, we will use it as the input/`get` resource called `resource-tutorial`.
-
-This means the `docker` subfolder in this tutorial section will be available at folder `resource-tutorial/51_dummy_resource_docker_image/docker` during the build plan (`resource-tutorial` is the name of the resource within the job build plan; and `51_dummy_resource_docker_image/docker` is the subfolder where the `Dockerfile` is located).
-
-Your `credentials.yml` now needs your Docker Hub account credentials (see `credentials.example.yml`):
-
-```yaml
-docker-hub-email: EMAIL
-docker-hub-username: USERNAME
-docker-hub-password: PASSWORD
-docker-hub-image-dummy-resource: USERNAME/51_dummy_resource_docker_image
-```
-
-The `run.sh` script will create the pipeline.yml and upload it to Concourse:
-
-```
-cd ../51_dummy_resource_docker_image
-./run.sh ../credentials.yml
-```
-
-You can also trigger the pipeline in the UI using the (+) icon.
-
-In the next section we'll use our new resource in a pipeline.
+* `service`: *Required.* A name for the service.
+* `stage`: *Optional.* Deployment stage. Defaults to `dev` per the Serverless defaults.
+* `package`: *Optional.* A package created with `serverless package` to deploy.
+* `env`: *Optional.*  Environment variables to pass through to the servless deployment.
